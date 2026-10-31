@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="size" content="960x820">
+<meta name="size" content="960x764">
 <title>工具与联网规定</title>
 <link rel="stylesheet" href="../tokens.css">
 <style>
@@ -54,7 +54,7 @@
 <div class="frame">
   <div class="head">
     <h2>各类题能用什么</h2>
-    <p>以各题面的“规定”一节为准。规定的执行情况不由评分员评，由出题人处理。</p>
+    <p>以各题面的“规定”一节为准。</p>
   </div>
   <div class="grid" id="grid">
     <div class="ch"></div>
@@ -73,14 +73,13 @@
 </div>
 <script>
 const ALL = [
-  ['访问 GitHub 上的任何仓库', '网页、git、gh 命令行和 API 都不行'],
   ['开启子代理或多代理协作', '全程独立作答'],
   ['访问作答目录以外的路径', '必需工具的安装路径和临时目录除外'],
   ['换账户登录、按进程名结束进程', 'runas、taskkill /IM 等'],
 ];
 const ROWS = [
   ['联网、其他 AI、安装软件', '网页搜索与抓取，调用其他模型或服务，下载或安装软件包',
-    [['no'], ['no'], ['no'], ['no'], ['na']]],
+    [['no'], ['no'], ['no'], ['no'], ['no', '只禁访问 GitHub']]],
   ['编写和运行程序', '',
     [['yes', 'Lean 编译和本机已装的程序'], ['no', '只靠推理，只写答案和草稿'], ['yes', '本机已装的软件和库'],
      ['yes', '开发时不限，提交另有规则'], ['yes', '可开本地服务器']]],

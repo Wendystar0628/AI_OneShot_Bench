@@ -1,8 +1,7 @@
-"""Generate small semantic tests with independent, sequential reference solvers.
+"""Generate the circuit task's semantic tests with an independent, sequential reference solver.
 
-Usage: python gen_correctness.py [--task circuit|sand|all]
+Usage: python gen_correctness.py
 """
-import argparse
 from collections import deque
 from pathlib import Path
 import random
@@ -122,53 +121,6 @@ def circuits():
                   4096, 512, 20261025, [digest] * 4096)
 
 
-def sand_reference(L, piles):
-    """Asynchronous legal topplings, independent of the GPU Jacobi update."""
-    h = [0] * (L * L)
-    for x, y, c in piles: h[y * L + x] += c
-    queue = deque(i for i, v in enumerate(h) if v >= 4)
-    queued = bytearray(L * L)
-    for i in queue: queued[i] = 1
-    while queue:
-        i = queue.popleft()
-        queued[i] = 0
-        q, h[i] = divmod(h[i], 4)
-        if not q: continue
-        x, y = i % L, i // L
-        for j, valid in [(i - 1, x > 0), (i + 1, x + 1 < L),
-                         (i - L, y > 0), (i + L, y + 1 < L)]:
-            if valid:
-                h[j] += q
-                if h[j] >= 4 and not queued[j]:
-                    queue.append(j)
-                    queued[j] = 1
-    return ''.join(''.join(map(str, h[y * L:(y + 1) * L])) + '\n' for y in range(L))
-
-
-def sands():
-    rng = random.Random(20261025)
-    cases = [
-        ('01_single_cell', 1, [(0, 0, 5), (0, 0, 27)]),
-        ('02_corners', 2, [(0, 0, 65), (1, 1, 91), (0, 1, 7)]),
-        ('03_sample', 5, [(2, 2, 40), (0, 4, 7)]),
-        ('04_tile_boundary', 49, [(47, 47, 120), (48, 48, 80), (0, 48, 75), (47, 47, 19)]),
-        ('05_stable_grid', 64, [(x, y, 1 + (x + y) % 3) for y in range(64) for x in range(64)]),
-        ('06_dense_tiles', 97, [(x, y, 4) for y in range(24, 73) for x in range(24, 73) if (x + y) % 2 == 0]),
-    ]
-    cases.append(('07_duplicates_random', 17, [(rng.randrange(17), rng.randrange(17), rng.randint(1, 10)) for _ in range(120)]))
-    base = ROOT / '网格沙粒倒塌的GPU加速' / 'correctness'
-    (base / 'inputs').mkdir(parents=True, exist_ok=True)
-    (base / 'expected').mkdir(exist_ok=True)
-    for name, L, piles in cases:
-        lines = [f'{L} {len(piles)}'] + [f'{x} {y} {c}' for x, y, c in piles]
-        (base / 'inputs' / f'{name}.txt').write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
-        (base / 'expected' / f'{name}.txt').write_text(sand_reference(L, piles), encoding='utf-8', newline='\n')
-
-
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--task', choices=['circuit', 'sand', 'all'], default='all')
-    args = parser.parse_args()
-    if args.task in ('circuit', 'all'): circuits()
-    if args.task in ('sand', 'all'): sands()
+    circuits()
     print('Correctness inputs and reference outputs generated.')

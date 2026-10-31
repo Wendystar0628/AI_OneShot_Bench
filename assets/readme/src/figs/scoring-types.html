@@ -69,7 +69,7 @@
     </section>
     <section class="panel">
       <h3>性能工程题</h3>
-      <p class="rule">24 个性能输入各算加速比 s = 参考解法用时 ÷ 提交用时，在对数尺度上查锚点后取平均，再乘以正确性输入的通过比例 k/7。</p>
+      <p class="rule">24 个性能输入各算加速比 s = 基线用时 ÷ 提交用时，在对数尺度上查锚点后取平均，再乘以正确性输入的通过比例 k/7。</p>
       <svg id="perf" width="432" height="214"></svg>
       <div class="zero"><p><b>记 0 分</b>：编译失败或违反题面规则；单个输入失败只丢这个输入</p></div>
     </section>
@@ -204,29 +204,29 @@ function plot(svgId, { xs, ys, xTicks, yTicks, xMinor = [] }) {
   txt(g, L - 34, B + 38, 'lab', '锚点取自最小三角形面积题');
 }
 
-/* 性能工程题: per-input lookup on a log axis, in multiples of the reference solution; sand and circuit anchors. */
+/* 性能工程题: per-input lookup on a log axis, in multiples of the reference solution; Transformer and circuit anchors. */
 {
-  const SAND = [[.2, 0], [.5, 5], [1, 20], [2, 37], [4, 55], [8, 74], [20, 100]];
+  const TRANSFORMER = [[.2, 0], [.6, 5], [1.2, 15], [2, 25], [4, 45], [8, 70], [12, 86], [16, 100]];
   const CIRC = [[.1, 0], [.5, 10], [1, 30], [1.75, 52], [2.75, 75], [4, 100]];
   const lg = Math.log;
   const { g, X, Y, B, R, L, T } = plot('perf', { xs: [lg(.1), lg(28)], ys: [0, 100], yTicks: [0, 50, 100],
-    xTicks: [[lg(.1), '0.1×'], [lg(.5), '0.5×'], [lg(1), '1×'], [lg(2), '2×'], [lg(4), '4×'], [lg(8), '8×'], [lg(20), '20×']],
+    xTicks: [[lg(.1), '0.1×'], [lg(.5), '0.5×'], [lg(1), '1×'], [lg(2), '2×'], [lg(4), '4×'], [lg(8), '8×'], [lg(16), '16×']],
     xMinor: [lg(.2), lg(1.75), lg(2.75)] });
   const curve = (A, attrs) => el('polyline', { points: [...A, [28, 100]].map(([s, p]) => `${X(lg(s))},${Y(p)}`).join(' '),
                                                fill: 'none', 'stroke-linejoin': 'round', ...attrs }, g);
   curve(CIRC, { stroke: 'var(--ink-3)', 'stroke-width': 1.75, 'stroke-dasharray': '5 3' });
   CIRC.forEach(([s, p]) => el('circle', { cx: X(lg(s)), cy: Y(p), r: 2.6, fill: 'var(--paper)', stroke: 'var(--ink-3)', 'stroke-width': 1.4 }, g));
-  curve(SAND, { stroke: 'var(--ink)', 'stroke-width': 2 });
-  SAND.forEach(([s, p]) => {
+  curve(TRANSFORMER, { stroke: 'var(--ink)', 'stroke-width': 2 });
+  TRANSFORMER.forEach(([s, p]) => {
     el('circle', { cx: X(lg(s)), cy: Y(p), r: 3, fill: 'var(--ink)', stroke: 'var(--paper)', 'stroke-width': 1.2 }, g);
-    if (s > .5 && s < 20) txt(g, X(lg(s)) + 6, Y(p) + 15, 'tick n', String(p), 'start');
+    if (s > 1 && s < 16) txt(g, X(lg(s)) + 6, Y(p) + 15, 'tick n', String(p), 'start');
   });
   // Legend, top left where both curves are low.
   const key = (y, dash, stroke, w, s) => {
     line(g, L + 10, y - 4, L + 34, y - 4, stroke, w, dash ? { 'stroke-dasharray': '5 3' } : {});
     txt(g, L + 42, y, 'lab', s);
   };
-  key(T + 10, false, 'var(--ink)', 2, '沙粒：20× 满分');
+  key(T + 10, false, 'var(--ink)', 2, 'Transformer：16× 满分');
   key(T + 30, true, 'var(--ink-3)', 1.75, '电路：4× 满分');
   txt(g, R, B + 38, 'lab', '加速比 s（对数刻度）', 'end');
   txt(g, L - 34, B + 38, 'lab', '两题锚点不同，越往右越陡');

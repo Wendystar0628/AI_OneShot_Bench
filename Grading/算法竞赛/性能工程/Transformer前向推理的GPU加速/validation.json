@@ -1,0 +1,100 @@
+{
+  "inputs": [
+    {
+      "case": "input_01",
+      "family": "大批量短序列"
+    },
+    {
+      "case": "input_02",
+      "family": "大批量短序列"
+    },
+    {
+      "case": "input_03",
+      "family": "大批量短序列"
+    },
+    {
+      "case": "input_04",
+      "family": "高维"
+    },
+    {
+      "case": "input_05",
+      "family": "高维"
+    },
+    {
+      "case": "input_06",
+      "family": "高维"
+    },
+    {
+      "case": "input_07",
+      "family": "长序列"
+    },
+    {
+      "case": "input_08",
+      "family": "长序列"
+    },
+    {
+      "case": "input_09",
+      "family": "长序列"
+    },
+    {
+      "case": "input_10",
+      "family": "超长序列"
+    },
+    {
+      "case": "input_11",
+      "family": "超长序列"
+    },
+    {
+      "case": "input_12",
+      "family": "超长序列"
+    },
+    {
+      "case": "input_13",
+      "family": "窄头"
+    },
+    {
+      "case": "input_14",
+      "family": "窄头"
+    },
+    {
+      "case": "input_15",
+      "family": "窄头"
+    },
+    {
+      "case": "input_16",
+      "family": "少头宽头"
+    },
+    {
+      "case": "input_17",
+      "family": "少头宽头"
+    },
+    {
+      "case": "input_18",
+      "family": "少头宽头"
+    },
+    {
+      "case": "input_19",
+      "family": "深层"
+    },
+    {
+      "case": "input_20",
+      "family": "深层"
+    },
+    {
+      "case": "input_21",
+      "family": "深层"
+    },
+    {
+      "case": "input_22",
+      "family": "常见配比"
+    },
+    {
+      "case": "input_23",
+      "family": "常见配比"
+    },
+    {
+      "case": "input_24",
+      "family": "常见配比"
+    }
+  ]
+}

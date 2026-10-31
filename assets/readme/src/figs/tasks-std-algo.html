@@ -49,7 +49,7 @@
 <div class="frame">
   <div class="head">
     <h2>算法竞赛：四道题各比什么</h2>
-    <p>极值构造以已知最好的构造为满分线；性能题与参考解法在同一次评测中各跑一遍，按加速比计分。</p>
+    <p>极值构造以已知最好的构造为满分线；性能题与基线在同一次评测中各跑 3 次取中位数，按加速比计分。</p>
   </div>
 
   <div class="row">
@@ -61,20 +61,20 @@
         <svg id="tri" width="428" height="200"></svg>
       </section>
       <section class="panel">
-        <h3>正负一序列的自相关能量最小化</h3>
-        <div class="meta"><span class="chip key">能量 E 越小越好</span><span class="chip env">作答：14 个逻辑处理器，共用 GPU</span></div>
+        <h3>大规模旅行商回路长度最小化</h3>
+        <div class="meta"><span class="chip key">回路长度 L 越小越好</span><span class="chip env">作答：14 个逻辑处理器，共用 GPU</span></div>
         <svg id="seq" width="428" height="200"></svg>
       </section>
     </div>
   </div>
 
   <div class="row">
-    <div class="rl"><b>性能工程</b><span>加速比 s = 参考解法用时 ÷ 提交用时，在对数尺度上查锚点；两图横轴相同</span></div>
+    <div class="rl"><b>性能工程</b><span>加速比 s = 基线用时 ÷ 提交用时，在对数尺度上查锚点；两图横轴相同</span></div>
     <div class="two">
       <section class="panel">
-        <h3>网格沙粒倒塌的GPU加速</h3>
+        <h3>Transformer前向推理的GPU加速</h3>
         <div class="meta"><span class="chip key">GPU：RTX 4080，CUDA</span><span class="chip env">作答：独占整机</span></div>
-        <svg id="sand" width="428" height="200"></svg>
+        <svg id="transformer" width="428" height="200"></svg>
       </section>
       <section class="panel">
         <h3>通用数字电路仿真器加速</h3>
@@ -153,22 +153,21 @@ function star(P, v, p, label) {   // the full-score benchmark point
   txt(P.g, P.R, P.B + 38, 'lab', 'r = Δ ÷ 已知最好值', 'end');
 }
 
-/* Autocorrelation energy: score falls with E; the x axis runs from large E to small E. */
+/* Tour length: g = L / L* - 1 on a log-like axis; the x axis runs from large excess to zero. */
 {
-  const A = [[10501, 0], [6301, 4], [5253, 10], [4845, 18], [4501, 30], [4205, 46], [3941, 68], [3701, 88], [3581, 100]];
-  const E0 = 11200, E1 = 3450, u = e => (E0 - e) / (E0 - E1);
-  const P = plot('seq', u, [[10501, '10501'], [6301, '6301'], [5253, '5253'], [4501, '4501'], [3581, '3581']],
-                 [4845, 4205, 3941, 3701]);
-  curve(P, [[E0, 0], ...A]);
-  A.slice(0, -1).forEach(([e, p]) => dot(P, e, p));
-  for (const [e, p] of [[6301, 4], [4501, 30], [3941, 68]]) txt(P.g, P.X(e) - 6, P.Y(p) - 7, 'pt n', String(p), 'end');
-  star(P, 3581, 100, '已知最好值 = 100 分');
-  txt(P.g, P.R, P.B + 38, 'lab', '能量 E（越往右越小）', 'end');
+  const A = [[25, 0], [15, 10], [10, 20], [6, 40], [3, 65], [1.5, 80], [.5, 90], [.1, 98], [0, 100]];
+  const G0 = 30, S = 0.25, u = g => 1 - Math.log(1 + g / S) / Math.log(1 + G0 / S);
+  const P = plot('seq', u, [[25, '25%'], [10, '10%'], [3, '3%'], [.5, '0.5%'], [0, '0']], [15, 6, 1.5, .1]);
+  curve(P, [[G0, 0], ...A]);
+  A.slice(0, -1).forEach(([g, p]) => dot(P, g, p));
+  for (const [g, p] of [[10, 20], [3, 65], [1.5, 80]]) txt(P.g, P.X(g) - 6, P.Y(p) - 7, 'pt n', String(p), 'end');
+  star(P, 0, 100, '已证明最优 = 100 分');
+  txt(P.g, P.R, P.B + 38, 'lab', '超额 g = 长度 ÷ 最优值 − 1（越往右越小）', 'end');
 }
 
 /* Speed-up: both tasks on the same log axis 0.1x-25x. */
 const LO = Math.log(.1), HI = Math.log(25), us = s => (Math.log(s) - LO) / (HI - LO);
-const sTicks = [[.1, '0.1×'], [.2, '0.2×'], [.5, '0.5×'], [1, '1×'], [2, '2×'], [4, '4×'], [8, '8×'], [20, '20×']];
+const sTicks = [[.1, '0.1×'], [.2, '0.2×'], [.5, '0.5×'], [1, '1×'], [2, '2×'], [4, '4×'], [8, '8×'], [16, '16×']];
 function perf(id, A, atRef, fullAt) {
   const P = plot(id, us, sTicks);
   // s = 1: as fast as the reference solution.
@@ -177,12 +176,12 @@ function perf(id, A, atRef, fullAt) {
   curve(P, [[.1, 0], ...A, [25, 100]]);
   A.forEach(([s, p]) => { if (s !== 1 && s !== fullAt) dot(P, s, p); });
   el('circle', { cx: P.X(1), cy: P.Y(atRef), r: 4.2, fill: 'var(--ink)', stroke: 'var(--paper)', 'stroke-width': 1.5 }, P.g);
-  txt(P.g, P.X(1) + 9, P.Y(atRef) + 16, 'call', `与参考解法持平：${atRef} 分`);
+  txt(P.g, P.X(1) - 8, P.Y(atRef) - 10, 'call', `与基线持平：${atRef} 分`, 'end');
   star(P, fullAt, 100, `${fullAt}× 起满分`);
   txt(P.g, P.R, P.B + 38, 'lab', '加速比 s（对数刻度）', 'end');
   return P;
 }
-perf('sand', [[.2, 0], [.5, 5], [1, 20], [2, 37], [4, 55], [8, 74], [20, 100]], 20, 20);
+perf('transformer', [[.2, 0], [.6, 5], [1.2, 15], [2, 25], [4, 45], [8, 70], [12, 86], [16, 100]], 12.4, 16);
 perf('circ', [[.1, 0], [.5, 10], [1, 30], [1.75, 52], [2.75, 75], [4, 100]], 30, 4);
 
 /* Footer: 24 inputs, eight families of three, shaded by an illustrative score. */

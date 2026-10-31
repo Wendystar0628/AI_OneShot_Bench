@@ -83,19 +83,19 @@ const TASKS = [
   ['动态路由塔防', 'game', 0, 100],
   ['NVIDIA_B200网页艺术', 'visual', 0, 100],
   ['太阳雨渔港3D渲染', 'visual', 0, 100],
-  ['物理仿真连锁机关', 'physics', 0, 100],
-  ['单位正方形内最小三角形面积最大化', 'algo', 100, 60],
-  ['正负一序列的自相关能量最小化', 'algo', 100, 60],
-  ['网格沙粒倒塌的GPU加速', 'algo', 160, 60],
-  ['通用数字电路仿真器加速', 'algo', 220, 60],
+  ['物理仿真连锁机关', 'physics', 0, 120],
+  ['单位正方形内最小三角形面积最大化', 'algo', 120, 60],
+  ['大规模旅行商回路长度最小化', 'algo', 120, 60],
+  ['Transformer前向推理的GPU加速', 'algo', 180, 60],
+  ['通用数字电路仿真器加速', 'algo', 240, 60],
 ];
 const BATCHES = [
   { title: '第一批　并行批', note: '7 题同时开测', at: 0, lanes: [0, 1, 2, 3, 4, 5, 6] },
-  { title: '第二批　分核同测', note: '两题同时进行，各限 14 个逻辑处理器', at: 100, lanes: [7, 8], done: '7 题全部到时，清理' },
-  { title: '第三批　串行独占', note: '两题依次独占，中间清理', at: 160, lanes: [9, 10], done: '2 题全部到时，清理' },
+  { title: '第二批　分核同测', note: '两题同时进行，各限 14 个逻辑处理器', at: 120, lanes: [7, 8], done: '7 题全部到时，清理' },
+  { title: '第三批　串行独占', note: '两题依次独占，中间清理', at: 180, lanes: [9, 10], done: '2 题全部到时，清理' },
 ];
 
-const W = 896, X0 = 196, END = 280;
+const W = 896, X0 = 196, END = 300;
 const S = (W - X0) / END;                 // px per minute, one scale for every bar
 const x = m => X0 + m * S;
 const LANE = 28, HEAD = 30, BAR = 20, RULER = 30;
@@ -112,7 +112,7 @@ function put(cls, css, html = '') {
 
 // Timing ruler: a tick every 10 minutes, a label every 30; the three hand-over times in ink,
 // each replacing a 30-minute label that would sit next to it.
-const KEY = [100, 160, 280];
+const KEY = [120, 180, 300];
 put('rl', `left:${x(0)}px;top:${RULER - 1}px;width:${END * S}px`);
 for (let m = 0; m <= END; m += 10) {
   const major = m % 30 === 0, key = KEY.includes(m);
@@ -148,20 +148,20 @@ TASKS.forEach(([n, c, s, d], i) => {
       `<span class="num">${d}</span>分钟`);
 });
 
-// The shorter tasks of batch 1 finish early and wait for the 100-minute one.
-[0, 1, 2, 4, 5, 6].forEach(i => {
+// The shorter tasks of batch 1 finish early and wait for the 120-minute one.
+[0, 1, 2, 3, 4, 5].forEach(i => {
   const end = TASKS[i][3];
-  put('wait', `left:${x(end) + 4}px;top:${laneTop[i] + LANE / 2}px;width:${(100 - end) * S - 8}px`);
+  put('wait', `left:${x(end) + 4}px;top:${laneTop[i] + LANE / 2}px;width:${(120 - end) * S - 8}px`);
 });
 // Batch 3 runs end to end.
-[[9, 10, 220]].forEach(([a, b, m]) =>
+[[9, 10, 240]].forEach(([a, b, m]) =>
   put('relay', `left:${x(m) - 0.75}px;top:${laneTop[a] + (LANE + BAR) / 2}px;height:${laneTop[b] - laneTop[a] - BAR}px`));
 
 // Start line, and each batch's finish line doubling as the next batch's start line.
 const [b1, b2, b3] = BATCHES;
 put('vline start', `left:${x(0) - 1}px;top:${b1.top}px;height:${b1.bottom - b1.top}px`);
-put('vline', `left:${x(100) - 0.75}px;top:${b1.top}px;height:${b2.bottom - b1.top}px`);
-put('vline', `left:${x(160) - 0.75}px;top:${b2.top}px;height:${laneTop[9] + LANE - b2.top}px`);
+put('vline', `left:${x(120) - 0.75}px;top:${b1.top}px;height:${b2.bottom - b1.top}px`);
+put('vline', `left:${x(180) - 0.75}px;top:${b2.top}px;height:${laneTop[9] + LANE - b2.top}px`);
 
 // Scoring: after the last batch, not on the time axis.
 put('done', `left:${x(END) - 10}px;top:${y + 6}px`, '11 题全部到时，清理后开始评分');
@@ -178,7 +178,7 @@ put('board', `left:${BOARD_LEFT}px;top:${y}px;width:${x(END) - BOARD_LEFT}px`,
      <div class="scope">形式化、IMO、极值构造</div>
      <div class="chips">${judge('GPT 6.1 Sol')}</div><div></div>
      <div class="stage next">性能<span>3 个会话依次评，独占机器</span></div>
-     <div class="scope">AE 性能、沙粒、电路</div>
+     <div class="scope">AE 性能、Transformer、电路</div>
      <div class="chips">${judge('GPT 6.1 Sol')}</div><div></div>
    </div>
    <div class="row">
